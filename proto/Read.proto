@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package message;
+
+message ClientRequest {
+  string word = 1;
+}
+
+message MapResponse {
+  string palavra = 1;
+  int64 ocorrencia = 2;
+}
+
+message MasterResponse {
+  repeated MapResponse mr = 1; 
+}
+
+message Worker {
+  string word = 1;
+}
+
+message Separador {
+  string word = 1;
+}
+
+message Result {
+  map<string, int64> found = 1;
+}
+
+message ResultFinal {
+  map<string, int64> found = 1;
+}
+service CountService {
+  rpc Cont (ClientRequest) returns (MasterResponse);
+}
