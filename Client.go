@@ -26,31 +26,41 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*10)
 	defer cancel()
 
-	file, err := os.Open("./Book.txt")
-	errMsg(err, "Erro ao abrir arquivo")
-	defer file.Close()
+	if len(os.Args) == 2 {
+		file, err := os.Open(os.Args[1])
+		errMsg(err, "Erro ao abrir arquivo")
+		defer file.Close()
 
-	b, err := ioutil.ReadAll(file)
-	t := string(b)
-	errMsg(err, "Erro ao ler arquivo")
+		b, err := ioutil.ReadAll(file)
+		t := string(b)
+		errMsg(err, "Erro ao ler arquivo")
 
-	r, err := c.Cont(ctx, &message.ClientRequest{Word: t})
-	errMsg(err, "ocorreu um erro")
+		r, err := c.Cont(ctx, &message.ClientRequest{Word: t})
+		errMsg(err, "ocorreu um erro")
 
-	A := r.GetMr()
+		A := r.GetMr()
 
-	saida, err := os.Create("./saida.txt")
-	errMsg(err, "Falha ao ler aquivo")
-	defer saida.Close()
+		saida, err := os.Create("./saida.txt")
+		errMsg(err, "Falha ao ler aquivo")
+		defer saida.Close()
 
-	for _, ocorrencia := range A {
-		Ocorr := strconv.FormatInt(ocorrencia.Ocorrencia, 10)
-		_, err := saida.WriteString(ocorrencia.Palavra + " : " + Ocorr + "\n")
-		errMsg(err, "Falha ao escrever arquivo")
+		for _, ocorrencia := range A {
+			Ocorr := strconv.FormatInt(ocorrencia.Ocorrencia, 10)
+			_, err := saida.WriteString(ocorrencia.Palavra + " : " + Ocorr + "\n")
+			errMsg(err, "Falha ao escrever arquivo")
 
-		saida.Sync()
-		log.Printf("%v : %d", ocorrencia.Palavra, ocorrencia.Ocorrencia)
+			saida.Sync()
+			log.Printf("%v : %d", ocorrencia.Palavra, ocorrencia.Ocorrencia)
+		}
+
+	} else if len(os.Args) < 2 {
+		log.Printf("Informe o caminho de uma arquivo de texto como argumento")
+		os.Exit(0)
+	} else {
+		log.Printf("Informe um arquivo por vez")
+		os.Exit(0)
 	}
+
 }
 
 func removeSpecialCharacters(s string) string {
